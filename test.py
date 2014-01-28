@@ -6,4 +6,4 @@ while n >= 0:
     m=i+m
     i=i+1
     n=n-1
-print m
+    print m
