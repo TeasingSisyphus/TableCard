@@ -1,0 +1,131 @@
+#Defintions of Card, Hand and Deck
+
+# Import the random module
+import random
+
+# The Card class represents a card in temrs of two attributes, its suit
+# and its rank. 
+class Card(object):
+    """represents a standard playing card."""
+
+    suit_names = ['Clubs', 'Diamonds', 'Hearts', 'Spades']
+    rank_names = [None, 'Ace', '2', '3', '4', '5', '6', '7', 
+              '8', '9', '10', 'Jack', 'Queen', 'King']
+
+    def __init__(self, suit=0, rank=2):
+        self.suit = suit
+        self.rank = rank
+
+    def __str__(self):
+        return '%s of %s' % (Card.rank_names[self.rank],
+                             Card.suit_names[self.suit])
+
+    def __cmp__(self, other):
+        # check the suits
+        if self.suit > other.suit: return 1
+        if self.suit < other.suit: return -1
+
+        # suits are the same... check ranks
+        if self.rank > other.rank: return 1
+        if self.rank < other.rank: return -1
+
+        # ranks are the same... it's a tie
+        return 0    
+
+# The Deck class represents a deck of cards.  The
+# cards are stored in a list. It includes methods
+# to pop, add, shuffle, and deal cards. 
+class Deck(object):
+    """represents a deck of cards"""
+    def __init__(self):
+        self.cards = []
+        for suit in range(4):
+            for rank in range(1, 14):
+                card = Card(suit, rank)
+                self.cards.append(card)
+
+    def __str__(self):
+        res = []
+        for card in self.cards:
+            res.append(str(card))
+        return ', '.join(res)
+
+    def pop_card(self):
+        return self.cards.pop()
+    
+    
+    def add_card(self, card):
+        self.cards.append(card)
+        
+        
+    def shuffle(self):
+        random.shuffle(self.cards)
+
+    def deal(self, hand, n):
+       for i in range(n):
+          hand.add_card(self.pop_card())
+       return hand
+
+
+    def deal_specific(self, card, deck):
+        deck.cards.append(self.cards.pop(card))
+        
+    def deal_solitaire(self, deck, starting_card):
+        for i in range(starting_card, len(self.cards)):
+            self.deal_specific(starting_card, deck)
+
+    def deal_backwards(self, hand, n):
+        for i in range(n):
+            hand.add_card(self.cards.pop(0))
+        return hand
+    
+    def find_card(self, card_name):
+        index = 0
+        counter = 0
+        rem = 0
+        card_name = str(card_name).lower()
+        for card in self.cards:
+            if str(card).lower() == card_name:
+                index = counter
+            counter = counter + 1
+        return index
+# The Hand class is a subclass of Deck.  It stores a 
+# sublist of a deck -- i.e., usually fewer than 52 cards.
+# It is meant to be subclassed to represent different
+# card games, such as blackjack, poker, hearts. 
+class Hand(Deck):
+    """represents a hand of playing cards"""
+
+    def __init__(self, label=''):
+        self.cards = []
+        self.label = label
+        
+class Pile(object): 
+    
+    def __init__(self, lable):
+        self.cards_face_up = Hand("up")
+        self.cards_face_down = Hand("down")
+        self.lable= lable
+        self.bottom_card = []
+        self.number = []
+        
+# Converts a pile into a string object
+# Piles are printed as "EMPTY SPACE" if neither hand
+# attribute has any cards, and otherwise are printed
+# as the list of the cards face-up and the number
+# of cards face-down
+    def __str__(self):
+        res=[]
+        for card in self.cards_face_up.cards:
+            res.append(str(card))
+        if len(res) == 0:
+            if len(self.cards_face_down.cards) == 0:
+                return "EMPTY SPACE"
+            else:
+                return "No Cards Face Up,"
+        elif len(self.cards_face_down.cards) != 1:
+            return str(res) + " And " + str(len(self.cards_face_down.cards)) + " Cards Face Down"
+        else:
+            return str(res) + " And " + str(len(self.cards_face_down.cards)) + " Card Face Down"
+deck = Deck()
+hand = Hand("lable")
